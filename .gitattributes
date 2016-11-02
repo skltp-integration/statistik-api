@@ -1,0 +1,2 @@
+# Löser problem med att shell-script får radbrytningar som inte fungerar i Linux/bash
+*.sh text eol=lf
