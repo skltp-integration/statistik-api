@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-@JacksonXmlRootElement(localName = "anrop")
+@JacksonXmlRootElement(localName = "anropPerKonsumentTjanstekontrakLogiskAdressat")
 @JsonInclude(Include.NON_EMPTY)
 public class AnropPerKonsumentTjanstekontrakLogiskAdressatDTO {
 

@@ -3,7 +3,10 @@
  */
 package se.inera.statistikapi.web.rest.v1.api;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +24,10 @@ import se.inera.statistikapi.web.rest.v1.dto.AnropPerKonsumentTjanstekontrakLogi
 import se.inera.statistikapi.web.rest.v1.dto.list.AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO;
 
 @RestController()
-@RequestMapping(value = { "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.xml", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.json" })
+@RequestMapping(value = { "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.xml", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.json", ""})
 public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 
+	private static final String CSV_DELIMITER = ";";
 	private static final String TIME_ALLOWED_REGEX = "([0-9]+[s|m|h|d|w])";
 	private static final int MAX_WEEKS = 2;
 	private static final int MAX_DAYS = MAX_WEEKS*14;
@@ -45,6 +49,47 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 		List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> posts = anropPerKonsumentTjanstekontrakLogiskAdressatService.findAll(criteria);
 
 		return posts;
+	}
+	
+	/**
+	 * GET /connectionPoints -> get all the connectionPoints as csv
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = {"/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.csv", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat"}, method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	public void getAllAsCsv(HttpServletResponse response,
+			@RequestParam(required = false) String tjanstekontrakt, 
+			@RequestParam(required = false) String time) throws IOException {
+		log.debug("REST request to get all AnropPerKonsumentTjanstekontrakLogiskAdressatDTO as csv");
+		response.setContentType("text/plain; charset=utf-8");
+		
+		validateTime(time);
+		AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO dto = new AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO(getAll(tjanstekontrakt, time));
+		
+		StringBuilder strBuilder = new StringBuilder();
+		strBuilder.append("konsumentHsaId" + CSV_DELIMITER);
+		strBuilder.append("konsumentBeskrivning" + CSV_DELIMITER);
+		strBuilder.append("antalAnrop" + CSV_DELIMITER);
+		strBuilder.append("tjanstekontrakt" + CSV_DELIMITER);
+		strBuilder.append("logiskAdressatHsaId" + CSV_DELIMITER);
+		strBuilder.append("logiskAdressatBeskrivning" + CSV_DELIMITER);
+		strBuilder.append("producentHsaId" + CSV_DELIMITER);
+		strBuilder.append("producentBeskrivning" + CSV_DELIMITER);
+		strBuilder.append("snittsvarstid" + CSV_DELIMITER);
+		
+		for (AnropPerKonsumentTjanstekontrakLogiskAdressatDTO item : dto.getAnrops()) {
+			strBuilder.append(System.lineSeparator());
+			strBuilder.append(item.getKonsumentHsaId() + CSV_DELIMITER);
+			strBuilder.append(item.getKonsumentBeskrivning() + CSV_DELIMITER);
+			strBuilder.append(item.getAntalAnrop() + CSV_DELIMITER);
+			strBuilder.append(item.getTjanstekontrakt() + CSV_DELIMITER);
+			strBuilder.append(item.getLogiskAdressatHsaId() + CSV_DELIMITER);
+			strBuilder.append(item.getLogiskAdressatBeskrivning() + CSV_DELIMITER);
+			strBuilder.append(item.getProducentHsaId() + CSV_DELIMITER);
+			strBuilder.append(item.getProducentBeskrivning() + CSV_DELIMITER);
+			strBuilder.append(item.getSnittsvarstid());
+		}
+		
+		response.getWriter().print(strBuilder.toString());
 	}
 	
 	/**
@@ -74,7 +119,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 		
 		return new AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO(getAll(tjanstekontrakt, time));
 	}
-
+	
 	private void validateTime(String time) {
 		if(time == null) {
 			return;

@@ -11,10 +11,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import se.inera.statistikapi.web.rest.v1.dto.AnropPerKonsumentTjanstekontrakLogiskAdressatDTO;
 
-@JacksonXmlRootElement(localName="anrops")
+@JacksonXmlRootElement(localName="anropPerKonsumentTjanstekontrakLogiskAdressatList")
 public class AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO {
 
-	@JacksonXmlProperty(localName = "anrop")
+	@JacksonXmlProperty(localName = "anropPerKonsumentTjanstekontrakLogiskAdressat")
 	@JacksonXmlElementWrapper(useWrapping = false)
 	private List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> anrops = new ArrayList<>();
 	
@@ -23,7 +23,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO {
 		this.anrops = all;
 	}
 
-	@XmlElement(name = "anrop")
+	@XmlElement(name = "anropPerKonsumentTjanstekontrakLogiskAdressat")
 	public List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> getAnrops() {
 		return anrops;
 	}

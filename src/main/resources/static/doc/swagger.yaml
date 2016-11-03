@@ -7,12 +7,13 @@ basePath: /v1
 produces:
   - application/json
   - application/xml
+  - text/plain
 paths:
   /anropPerKonsumentTjanstekontrakLogiskAdressat:
     get:
       summary: AnropPerKonsumentTjanstekontrakLogiskAdressat
       description: |
-        AnropPerKonsumentTjanstekontrakLogiskAdressat  
+        Man kan också lägga till ändelser .xml .json .csv i Request URL för att styra format.
       tags:
         - AnropPerKonsumentTjanstekontrakLogiskAdressat
       responses:

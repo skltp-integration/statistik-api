@@ -8,13 +8,14 @@
     "basePath": "/statistik/v1",
     "produces": [
         "application/json",
-        "application/xml"
+        "application/xml",
+        "text/plain"
     ],
     "paths": {
         "/anropPerKonsumentTjanstekontrakLogiskAdressat": {
             "get": {
                 "summary": "AnropPerKonsumentTjanstekontrakLogiskAdressat",
-                "description": "AnropPerKonsumentTjanstekontrakLogiskAdressat",
+                "description": "Man kan också lägga till ändelser .xml .json .csv i Request URL för att styra format.",
                 "parameters": [
                     {
                         "name": "tjanstekontrakt",
