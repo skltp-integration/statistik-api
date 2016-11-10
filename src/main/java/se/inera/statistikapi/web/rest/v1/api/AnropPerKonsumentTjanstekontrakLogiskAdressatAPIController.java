@@ -55,7 +55,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 	 * GET /connectionPoints -> get all the connectionPoints as csv
 	 * @throws IOException 
 	 */
-	@RequestMapping(value = {"/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.csv", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat"}, method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	@RequestMapping(value = {"/v1/anropPerKonsumentTjanstekontrakLogiskAdressat.csv", "/v1/anropPerKonsumentTjanstekontrakLogiskAdressat"}, method = RequestMethod.GET)
 	public void getAllAsCsv(HttpServletResponse response,
 			@RequestParam(required = false) String tjanstekontrakt, 
 			@RequestParam(required = false) String time) throws IOException {
