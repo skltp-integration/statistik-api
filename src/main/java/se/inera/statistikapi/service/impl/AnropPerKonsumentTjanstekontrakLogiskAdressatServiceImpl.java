@@ -16,8 +16,8 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.avg.InternalAvg;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,8 @@ import se.inera.statistikapi.service.TakApiRestComsumerService;
 import se.inera.statistikapi.takapi.ServiceConsumer;
 import se.inera.statistikapi.takapi.ServiceProduction;
 import se.inera.statistikapi.web.rest.v1.dto.AnropPerKonsumentTjanstekontrakLogiskAdressatDTO;
+
+import static java.lang.Integer.MAX_VALUE;
 
 @Service("anropPerKonsumentTjanstekontrakLogiskAdressatService")
 public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements AnropPerKonsumentTjanstekontrakLogiskAdressatService {
@@ -109,7 +111,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         Iterator<Aggregation> listAggregations = aggregations.iterator();
         while (listAggregations.hasNext()) {
             Aggregation agg = listAggregations.next();
-            parseSenderIdsBuckets(list, ((StringTerms) agg).getBuckets());
+            parseSenderIdsBuckets(list, ((UnmappedTerms) agg).getBuckets());
         }
         return list;
     }
@@ -129,7 +131,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         Iterator<Aggregation> listSenderIdsAggregations = senderIdsAggregations.iterator();
         while (listSenderIdsAggregations.hasNext()) {
             Aggregation senderIdsAggregation = listSenderIdsAggregations.next();
-            parseTjansteKontraktBuckets(list, senderId, ((StringTerms) senderIdsAggregation).getBuckets());
+            parseTjansteKontraktBuckets(list, senderId, ((UnmappedTerms) senderIdsAggregation).getBuckets());
         }
     }
 
@@ -151,7 +153,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
 
         while (listTjanstekontraktAggregations.hasNext()) {
             Aggregation tjanstekontraktAggregation = listTjanstekontraktAggregations.next();
-            Iterator<Bucket> groupReceiverIdsBuckets = ((StringTerms) tjanstekontraktAggregation).getBuckets().iterator();
+            Iterator<Bucket> groupReceiverIdsBuckets = ((UnmappedTerms) tjanstekontraktAggregation).getBuckets().iterator();
 
             while (groupReceiverIdsBuckets.hasNext()) {
                 Bucket receiverIdsBucket = groupReceiverIdsBuckets.next();
@@ -197,14 +199,14 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         return AggregationBuilders
                 .terms("group_senderids")
                 .field("senderid.raw")
-                .size(0)
+                .size(MAX_VALUE)
                 .subAggregation(
                         AggregationBuilders
                                 .terms("group_tjanstekontrakt")
                                 .field("tjanstekontrakt.raw")
-                                .size(0)
+                                .size(MAX_VALUE)
                                 .subAggregation(
-                                        AggregationBuilders.terms("group_receiverids").field("receiverid.raw").size(0)
+                                        AggregationBuilders.terms("group_receiverids").field("receiverid.raw").size(MAX_VALUE)
                                                 .subAggregation(AggregationBuilders.avg("group_avg_timeproducer").field("time_producer"))));
     }
 
