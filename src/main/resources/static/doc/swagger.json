@@ -27,7 +27,7 @@
                     {
                         "name": "time",
                         "in": "query",
-                        "description": "Hur långt tillbaka i tiden satistik skall tas. Ex. 1h, 2d, 1w. Om inget anges används 2w d.v.s. 2 veckor bakåt",
+                        "description": "Hur långt tillbaka i tiden statistik skall tas. Ex. 1h, 2d, 1w. Om inget anges används 1w d.v.s. 1 vecka bakåt. Max 2 veckor är tillåtet.",
                         "required": false,
                         "type": "string"
                     }

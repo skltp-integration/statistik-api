@@ -16,6 +16,7 @@ import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.avg.InternalAvg;
@@ -111,7 +112,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         Iterator<Aggregation> listAggregations = aggregations.iterator();
         while (listAggregations.hasNext()) {
             Aggregation agg = listAggregations.next();
-            parseSenderIdsBuckets(list, ((UnmappedTerms) agg).getBuckets());
+            parseSenderIdsBuckets(list, ((StringTerms) agg).getBuckets());
         }
         return list;
     }
@@ -131,7 +132,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         Iterator<Aggregation> listSenderIdsAggregations = senderIdsAggregations.iterator();
         while (listSenderIdsAggregations.hasNext()) {
             Aggregation senderIdsAggregation = listSenderIdsAggregations.next();
-            parseTjansteKontraktBuckets(list, senderId, ((UnmappedTerms) senderIdsAggregation).getBuckets());
+            parseTjansteKontraktBuckets(list, senderId, ((StringTerms) senderIdsAggregation).getBuckets());
         }
     }
 
@@ -153,7 +154,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
 
         while (listTjanstekontraktAggregations.hasNext()) {
             Aggregation tjanstekontraktAggregation = listTjanstekontraktAggregations.next();
-            Iterator<Bucket> groupReceiverIdsBuckets = ((UnmappedTerms) tjanstekontraktAggregation).getBuckets().iterator();
+            Iterator<Bucket> groupReceiverIdsBuckets = ((StringTerms) tjanstekontraktAggregation).getBuckets().iterator();
 
             while (groupReceiverIdsBuckets.hasNext()) {
                 Bucket receiverIdsBucket = groupReceiverIdsBuckets.next();
@@ -186,11 +187,11 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
 
     private BoolQueryBuilder buildTerms(AnropPerKonsumentTjanstekontrakLogiskAdressatCriteria criteria) {
         BoolQueryBuilder terms = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("_type", "tp-track"))
-                .must(QueryBuilders.termQuery("waypoint.raw", "resp-out")).must(QueryBuilders.termQuery("componentId.raw", "vp-services"))
+                .must(QueryBuilders.termQuery("waypoint.keyword", "resp-out")).must(QueryBuilders.termQuery("componentId.keyword", "vp-services"))
                 .must(QueryBuilders.rangeQuery("@timestamp").from("now-" + criteria.getTime().toLowerCase()).to("now"));
 
         if (criteria.getTjanstekontrakt() != null && !criteria.getTjanstekontrakt().isEmpty()) {
-            terms = terms.must(QueryBuilders.termQuery("tjanstekontrakt.raw", criteria.getTjanstekontrakt()));
+            terms = terms.must(QueryBuilders.termQuery("tjanstekontrakt.keyword", criteria.getTjanstekontrakt()));
         }
         return terms;
     }
@@ -198,17 +199,17 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
     private AggregationBuilder buildAggregations() {
         return AggregationBuilders
                 .terms("group_senderids")
-                .field("senderid.raw")
+                .field("senderid.keyword")
                 .size(MAX_VALUE)
                 .subAggregation(
-                        AggregationBuilders
-                                .terms("group_tjanstekontrakt")
-                                .field("tjanstekontrakt.raw")
+            AggregationBuilders
+                    .terms("group_tjanstekontrakt")
+                                .field("tjanstekontrakt.keyword")
                                 .size(MAX_VALUE)
                                 .subAggregation(
-                                        AggregationBuilders.terms("group_receiverids").field("receiverid.raw").size(MAX_VALUE)
+            AggregationBuilders.terms("group_receiverids").field("receiverid.keyword").size(MAX_VALUE)
                                                 .subAggregation(AggregationBuilders.avg("group_avg_timeproducer").field("time_producer"))));
-    }
+}
 
     private ServiceProduction getServiceProductionForDTO(AnropPerKonsumentTjanstekontrakLogiskAdressatDTO dto, ServiceProduction[] serviceProductions) {
         for (ServiceProduction serviceProduction : serviceProductions) {
