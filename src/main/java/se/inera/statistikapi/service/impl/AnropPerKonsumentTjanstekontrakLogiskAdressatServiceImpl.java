@@ -18,7 +18,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.avg.InternalAvg;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,8 @@ import org.springframework.stereotype.Service;
 
 import se.inera.statistikapi.criteria.AnropPerKonsumentTjanstekontrakLogiskAdressatCriteria;
 import se.inera.statistikapi.service.AnropPerKonsumentTjanstekontrakLogiskAdressatService;
-import se.inera.statistikapi.service.TakApiRestComsumerService;
+import se.inera.statistikapi.service.TakApiRestConsumerService;
+import se.inera.statistikapi.service.helper.ElasticSearchHelper;
 import se.inera.statistikapi.takapi.ServiceConsumer;
 import se.inera.statistikapi.takapi.ServiceProduction;
 import se.inera.statistikapi.web.rest.v1.dto.AnropPerKonsumentTjanstekontrakLogiskAdressatDTO;
@@ -37,21 +37,18 @@ import static java.lang.Integer.MAX_VALUE;
 @Service("anropPerKonsumentTjanstekontrakLogiskAdressatService")
 public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements AnropPerKonsumentTjanstekontrakLogiskAdressatService {
 
-    private static final String CLUSTER_NAME = "cluster.name";
-    private static final String ELASTICSEARCH_PORT = "elasticsearch-port";
-    private static final String ELASTICSEARCH_SERVER = "elasticsearch-server";
     private static final String DEFAULT_TIME = "1w";
 
     @Autowired
     Environment env;
 
     @Autowired
-    TakApiRestComsumerService takApiRestComsumerService;
+    TakApiRestConsumerService takApiRestConsumerService;
 
     @Override
     public List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> findAll(AnropPerKonsumentTjanstekontrakLogiskAdressatCriteria criteria) {
 
-        TransportClient client = getTransportClient();
+        TransportClient client =  ElasticSearchHelper.getTransportClient(env);
 
         checkTime(criteria);
 
@@ -67,27 +64,9 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatServiceImpl implements
         return list;
     }
 
-    private TransportClient getTransportClient() {
-        String clusterName = env.getProperty(CLUSTER_NAME);
-        String serverName = env.getProperty(ELASTICSEARCH_SERVER);
-        int serverPort = Integer.parseInt(env.getProperty(ELASTICSEARCH_PORT));
-
-        Settings settings = Settings.builder().put(CLUSTER_NAME, clusterName).build();
-
-        TransportClient client = null;
-        try {
-            client = new PreBuiltTransportClient(settings).addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(serverName),
-                    serverPort));
-        } catch (UnknownHostException e) {
-            // TODO what should we do here?
-            e.printStackTrace();
-        }
-        return client;
-    }
-
     private void addTakData(List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> list) {
-        ServiceConsumer[] serviceConsumers = takApiRestComsumerService.getServiceConsumers();
-        ServiceProduction[] serviceProductions = takApiRestComsumerService.getServiceProductions();
+        ServiceConsumer[] serviceConsumers = takApiRestConsumerService.getServiceConsumers();
+        ServiceProduction[] serviceProductions = takApiRestConsumerService.getServiceProductions();
 
         for (AnropPerKonsumentTjanstekontrakLogiskAdressatDTO dto : list) {
             dto.setKonsumentBeskrivning(getServiceConsumerDescription(dto.getKonsumentHsaId(), serviceConsumers));

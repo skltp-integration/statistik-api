@@ -20,27 +20,32 @@
  */
 package se.inera.statistikapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.util.HashMap;
+import java.util.Map;
 
-import se.inera.statistikapi.Application;
 
 // tomcat bin directory should contain a setenv.sh containing
 // export CATALINA_OPTS="$CATALINA_OPTS -Dspring.profiles.active=prod"
 // export CATALINA_OPTS="$CATALINA_OPTS -Dapp.conf.dir=/Users/jan/conf"
 // the statistikapi-config-override.properties should be placed in the directory pointed out in the last row above
+
+
 
 @SpringBootApplication
 @PropertySources({
@@ -55,8 +60,8 @@ public class Application extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Application.class);
-    }    
-		
+    }
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
