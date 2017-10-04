@@ -2,7 +2,7 @@ package se.inera.statistikapi.web.rest.v1.dto;
 
 import java.util.List;
 
-public class IntygPerRecieverId {
+public class IntygGrupperatPaSenderIds {
     private long antal;
     private List<IntygPerSenderId> intygPerSenderIdList;
 

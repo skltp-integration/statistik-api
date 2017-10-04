@@ -18,7 +18,10 @@ public class FkStatistikServiceImpl {
     FkAntalAnropServiceImpl fkAntalAnropService;
 
     @Autowired
-    FkFragorOchSvarFranVardenServiceImpl fkFragorOchSvarService;
+    FkFragorOchSvarFranVardenServiceImpl fkFragorOchSvarFranVardenService;
+
+    @Autowired
+    FkFragorOchSvarTillVardenServiceImpl fkFragorOchSvarTillVardenService;
 
     private static final String DEFAULT_TIME = "1w";
 
@@ -30,7 +33,8 @@ public class FkStatistikServiceImpl {
 
         FkStatistik fkStatistik = new FkStatistik();
         fkStatistik.setFkAntalIntyg(fkAntalAnropService.getFkAntalAnrop(time, client));
-        fkStatistik.setFkFragorOchSvarFranVarden(fkFragorOchSvarService.getFkFragorOchSvar(time, client));
+        fkStatistik.setFkFragorOchSvarFranVarden(fkFragorOchSvarFranVardenService.getFkFragorOchSvar(time, client));
+        fkStatistik.setFkFragorOchSvarTillVarden(fkFragorOchSvarTillVardenService.getFkFragorOchSvarTillVarden(time, client));
 
         client.close();
         return fkStatistik;

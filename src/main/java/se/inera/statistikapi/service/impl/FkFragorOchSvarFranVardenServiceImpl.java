@@ -16,19 +16,24 @@ import se.inera.statistikapi.service.helper.ElasticSearchHelper;
 import se.inera.statistikapi.takapi.ServiceConsumer;
 import se.inera.statistikapi.web.rest.v1.dto.FkFragorOchSvarFranVarden;
 import se.inera.statistikapi.web.rest.v1.dto.IntygErrors;
-import se.inera.statistikapi.web.rest.v1.dto.IntygPerRecieverId;
+import se.inera.statistikapi.web.rest.v1.dto.IntygGrupperatPaSenderIds;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Service("fkFragorOchSvarFranVardenService")
 public class FkFragorOchSvarFranVardenServiceImpl {
 
+    public static final String URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_ANSWER_1_RIVTABP20 = "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswer:1:rivtabp20";
+    public static final String URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_QUESTION_1_RIVTABP20 = "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20";
+
+    public static final String LOGISK_ADRESS_FK_OLD = "2021005521";
+
+
     @Autowired
     TakApiRestConsumerService takApiRestConsumerService;
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FkFragorOchSvarFranVardenServiceImpl.class);
 
-    public static final String LOGISK_ADRESS_FK_OLD = "2021005521";
 
     public FkFragorOchSvarFranVarden getFkFragorOchSvar(String time, TransportClient client){
         FkFragorOchSvarFranVarden fkFragorOchSvarFranVarden = new FkFragorOchSvarFranVarden();
@@ -53,28 +58,25 @@ public class FkFragorOchSvarFranVardenServiceImpl {
 
     private QueryBuilder buildQueryAntalError(String age) {
         BoolQueryBuilder qb = ElasticSearchHelper.buildQueryVPServiceErrors(age)
-                .should(termQuery("tjansteinteraktion.keyword", "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswer:1:rivtabp20"))
-                .should(termQuery("tjansteinteraktion.keyword", "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20"));
+                .should(termQuery("tjansteinteraktion.keyword", URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_ANSWER_1_RIVTABP20))
+                .should(termQuery("tjansteinteraktion.keyword", URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_QUESTION_1_RIVTABP20));
 
         ConstantScoreQueryBuilder constantScoreQueryBuilder = constantScoreQuery(qb);
         return constantScoreQueryBuilder;
     }
 
     private void getFkFragorOchSvarFranVardenTillFK(FkFragorOchSvarFranVarden fkFragorOchSvarFranVarden, String time, TransportClient client) {
-
-
         SearchResponse resp = client.prepareSearch().setQuery(buildQueryFragorSvarVardenTillFk(time)).setSize(0)
-                .addAggregation(ElasticSearchHelper.buildAggregationsGroupRecieverAndSenders()).execute().actionGet();
+                .addAggregation(ElasticSearchHelper.buildAggregationsGroupReceiverAndSenders()).execute().actionGet();
 
         parseFragorSvarVardenTillFk(resp.getAggregations(), fkFragorOchSvarFranVarden);
     }
 
-
     private QueryBuilder buildQueryFragorSvarVardenTillFk(String age) {
 
         BoolQueryBuilder qb = ElasticSearchHelper.buildQueryVPServicesInRequests(age)
-                .should(termQuery("tjansteinteraktion.keyword", "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswer:1:rivtabp20"))
-                .should(termQuery("tjansteinteraktion.keyword", "urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20"));
+                .should(termQuery("tjansteinteraktion.keyword", URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_ANSWER_1_RIVTABP20))
+                .should(termQuery("tjansteinteraktion.keyword", URN_RIV_INSURANCEPROCESS_HEALTHREPORTING_SEND_MEDICAL_CERTIFICATE_QUESTION_1_RIVTABP20));
 
         ConstantScoreQueryBuilder constantScoreQueryBuilder = constantScoreQuery(qb);
         return constantScoreQueryBuilder;
@@ -88,11 +90,8 @@ public class FkFragorOchSvarFranVardenServiceImpl {
         LOGGER.info("aggregations.get(\"group_receiverids\") size=" + group_receiverids.getBuckets().size());
 
         StringTerms.Bucket fragorSvarVardenTillFk = group_receiverids.getBucketByKey(LOGISK_ADRESS_FK_OLD);
-        IntygPerRecieverId intygPerRecieverId = ElasticSearchHelper.createFkIntygPerRecieverId(fragorSvarVardenTillFk, serviceConsumers);
-        fkFragorOchSvarFranVarden.setFragorOchSvarFranVardenTillFK(intygPerRecieverId);
-
+        IntygGrupperatPaSenderIds intygGrupperatPaSenderIds = ElasticSearchHelper.createFkIntygGrupperatPaSenderId(fragorSvarVardenTillFk, serviceConsumers);
+        fkFragorOchSvarFranVarden.setFragorOchSvarFranVardenTillFK(intygGrupperatPaSenderIds);
     }
-
-
 
 }

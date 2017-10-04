@@ -30,10 +30,8 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.core.env.Environment;
 
 import se.inera.statistikapi.takapi.ServiceConsumer;
-import se.inera.statistikapi.web.rest.v1.dto.FkAntalIntyg;
-import se.inera.statistikapi.web.rest.v1.dto.IntygErrors;
-import se.inera.statistikapi.web.rest.v1.dto.IntygPerRecieverId;
-import se.inera.statistikapi.web.rest.v1.dto.IntygPerSenderId;
+import se.inera.statistikapi.takapi.ServiceProduction;
+import se.inera.statistikapi.web.rest.v1.dto.*;
 
 public class ElasticSearchHelper {
 
@@ -74,13 +72,25 @@ public class ElasticSearchHelper {
                 .must(termQuery("componentId.keyword", "vp-services"))
                 .must(rangeQuery("@timestamp").from("now-" + age).to("now"));
     }
-    public static AggregationBuilder buildAggregationsGroupRecieverAndSenders() {
+
+
+
+    public static AggregationBuilder buildAggregationsGroupReceiverAndSenders() {
         return AggregationBuilders
                 .terms("group_receiverids")
                 .field("receiverid.keyword")
                 .size(MAX_VALUE)
                 .subAggregation(AggregationBuilders.terms("group_senderids")
                         .field("senderid.keyword"));
+    }
+
+    public static AggregationBuilder buildAggregationsGroupSendersAndReceivers() {
+        return AggregationBuilders
+                .terms("group_senderids")
+                .field("senderid.keyword")
+                .size(MAX_VALUE)
+                .subAggregation(AggregationBuilders.terms("group_receiverids")
+                        .field("receiverid.keyword"));
     }
 
     public static AggregationBuilder buildAggregationsGroupPerDay() {
@@ -91,17 +101,17 @@ public class ElasticSearchHelper {
     }
 
 
-    public static IntygPerRecieverId createFkIntygPerRecieverId(Bucket bucket, ServiceConsumer[] serviceConsumers) {
-        IntygPerRecieverId intygPerRecieverId = new IntygPerRecieverId();
+    public static IntygGrupperatPaSenderIds createFkIntygGrupperatPaSenderId(Bucket bucket, ServiceConsumer[] serviceConsumers) {
+        IntygGrupperatPaSenderIds intygGrupperatPaSenderIds = new IntygGrupperatPaSenderIds();
         if (bucket != null) {
-            intygPerRecieverId.setIntygPerSenderIdList(createFkAntalIntygPerSenderIdList(bucket, serviceConsumers));
-            intygPerRecieverId.setAntal(bucket.getDocCount());
+            intygGrupperatPaSenderIds.setIntygPerSenderIdList(createFkAntalIntygPerSenderIdList(bucket, serviceConsumers));
+            intygGrupperatPaSenderIds.setAntal(bucket.getDocCount());
         }
-        return intygPerRecieverId;
+        return intygGrupperatPaSenderIds;
     }
 
     public static List<IntygPerSenderId> createFkAntalIntygPerSenderIdList(Bucket bucket, ServiceConsumer[] serviceConsumers) {
-        List<IntygPerSenderId> intygPerSenderIdList = new ArrayList();
+        List<IntygPerSenderId> intygPerSenderIdList = new ArrayList<>();
         StringTerms group_senderids = bucket.getAggregations().get("group_senderids");
         for (Bucket senderIdBucket : group_senderids.getBuckets()) {
 
@@ -110,6 +120,42 @@ public class ElasticSearchHelper {
         }
         return intygPerSenderIdList;
     }
+
+
+    public static List<IntygPerReceiverId> createFkAntalIntygPerReceiverIdList(Bucket bucket, ServiceProduction[] serviceProductions) {
+        List<IntygPerReceiverId> intygPerSenderIdList = new ArrayList<>();
+        StringTerms group_receiverids = bucket.getAggregations().get("group_receiverids");
+        for (Bucket receiverIdBucket : group_receiverids.getBuckets()) {
+
+            String description = getDescriptionFromServiceProductionOnLogicalAdress(receiverIdBucket.getKeyAsString(), serviceProductions);
+            intygPerSenderIdList.add(new IntygPerReceiverId(receiverIdBucket.getKeyAsString(), receiverIdBucket.getDocCount(), description));
+        }
+        return intygPerSenderIdList;
+    }
+
+    // reciverId can have delimiter # where the structure is VG#VE (VG=Vardgivare, VE=Vardenhet)
+    // SE2321000131-E000000007492#SE2321000131-E000000007500
+    // only return the name for the first found id
+    private static String getDescriptionFromServiceProductionOnLogicalAdress(String receiverId, ServiceProduction[] serviceProductions) {
+        String description = "";
+        if (receiverId.contains("#")) {
+            String[] receiverIds = receiverId.split("#");
+            if (receiverIds.length > 1) {
+                description = mapTakLogicalAddressldToDescription(receiverIds[0], serviceProductions);
+                if (description == null)
+                    description = mapTakLogicalAddressldToDescription(receiverIds[1], serviceProductions);
+            }
+        }
+        else {
+            description = mapTakLogicalAddressldToDescription(receiverId, serviceProductions);
+        }
+        return description;
+    }
+
+    private static String mapTakLogicalAddressldToDescription(String logicalAddress, ServiceProduction[] serviceProductions) {
+        return Arrays.stream(serviceProductions).filter(serviceProduction -> logicalAddress.equals(serviceProduction.getLogicalAddress().getLogicalAddress())).findFirst().map(serviceProduction -> serviceProduction.getLogicalAddress().getDescription()).orElse(null);
+    }
+
 
     public static IntygErrors getIntygErrorsFromResponse(Aggregations aggregations, Long totalAntalAnrop) {
         IntygErrors errors = new IntygErrors();

@@ -6,8 +6,8 @@ import se.inera.statistikapi.web.rest.exception.TimeFormatException;
 public class TimeValidator {
 
     private static final String TIME_ALLOWED_REGEX = "([0-9]+[s|m|h|d|w])";
-    private static final int MAX_WEEKS = 22;
-    private static final int MAX_DAYS = MAX_WEEKS*14;
+    private static final int MAX_WEEKS = 2;
+    private static final int MAX_DAYS = MAX_WEEKS*7;
     private static final int MAX_HOURS = MAX_DAYS*24;
     private static final int MAX_MINUTES = MAX_HOURS*60;
     private static final int MAX_SECONDS = MAX_MINUTES*60;

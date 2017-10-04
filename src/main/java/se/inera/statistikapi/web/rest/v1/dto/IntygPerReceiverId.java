@@ -1,18 +1,19 @@
 package se.inera.statistikapi.web.rest.v1.dto;
 
-public class IntygPerSenderId {
-    private String senderId;
+
+public class IntygPerReceiverId {
+    private String receiverId;
     private long anrop;
     private String namn;
 
-    public IntygPerSenderId(String senderId, long docCount, String description) {
-        this.senderId = senderId;
+    public IntygPerReceiverId(String receiverId, long docCount, String description) {
+        this.receiverId = receiverId;
         this.anrop = docCount;
         this.namn = description;
     }
 
-    public String getSenderId() {
-        return senderId;
+    public String getReceiverId() {
+        return receiverId;
     }
 
     public long getAnrop() {

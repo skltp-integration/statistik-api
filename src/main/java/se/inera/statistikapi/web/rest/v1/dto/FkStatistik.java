@@ -9,6 +9,7 @@ public class FkStatistik {
 
     private FkAntalIntyg fkAntalIntyg;
     private FkFragorOchSvarFranVarden fkFragorOchSvarFranVarden;
+    private FkFragorOchSvarTillVarden fkFragorOchSvarTillVarden;
 
     public FkAntalIntyg getFkAntalIntyg() {
         return fkAntalIntyg;
@@ -24,5 +25,13 @@ public class FkStatistik {
 
     public void setFkFragorOchSvarFranVarden(FkFragorOchSvarFranVarden fkFragorOchSvarFranVarden) {
         this.fkFragorOchSvarFranVarden = fkFragorOchSvarFranVarden;
+    }
+
+    public FkFragorOchSvarTillVarden getFkFragorOchSvarTillVarden() {
+        return fkFragorOchSvarTillVarden;
+    }
+
+    public void setFkFragorOchSvarTillVarden(FkFragorOchSvarTillVarden fkFragorOchSvarTillVarden) {
+        this.fkFragorOchSvarTillVarden = fkFragorOchSvarTillVarden;
     }
 }

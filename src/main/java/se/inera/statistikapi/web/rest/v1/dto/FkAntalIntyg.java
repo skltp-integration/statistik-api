@@ -8,32 +8,28 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 public class FkAntalIntyg {
 
     private Long antalRegisterMedicalCertificateToFKTot;
-    private IntygPerRecieverId registerMedicalCertificateToFKDirekt;
-    private IntygPerRecieverId registerMedicalCertificateToFKViaIntygstjansten;
+    private IntygGrupperatPaSenderIds registerMedicalCertificateToFKDirekt;
+    private IntygGrupperatPaSenderIds registerMedicalCertificateToFKViaIntygstjansten;
     private IntygErrors felRegisterMedicalCertificate;
 
-    //    private Long antalFelRegisterMedicalCertificateTotal;
-//    private Long antalFelRegisterMedicalCertificateOnSundays;
-//    private String antalFelAvTotal;
-
-    private IntygPerRecieverId sendMedicalCertificateToIntygstjansten;
+    private IntygGrupperatPaSenderIds sendMedicalCertificateToIntygstjansten;
 
     public FkAntalIntyg() {
     }
 
-    public IntygPerRecieverId getRegisterMedicalCertificateToFKDirekt() {
+    public IntygGrupperatPaSenderIds getRegisterMedicalCertificateToFKDirekt() {
         return registerMedicalCertificateToFKDirekt;
     }
 
-    public void setRegisterMedicalCertificateToFKDirekt(IntygPerRecieverId registerMedicalCertificateToFKDirekt) {
+    public void setRegisterMedicalCertificateToFKDirekt(IntygGrupperatPaSenderIds registerMedicalCertificateToFKDirekt) {
         this.registerMedicalCertificateToFKDirekt = registerMedicalCertificateToFKDirekt;
     }
 
-    public IntygPerRecieverId getRegisterMedicalCertificateToFKViaIntygstjansten() {
+    public IntygGrupperatPaSenderIds getRegisterMedicalCertificateToFKViaIntygstjansten() {
         return registerMedicalCertificateToFKViaIntygstjansten;
     }
 
-    public void setRegisterMedicalCertificateToFKViaIntygstjansten(IntygPerRecieverId registerMedicalCertificateToFKViaIntygstjansten) {
+    public void setRegisterMedicalCertificateToFKViaIntygstjansten(IntygGrupperatPaSenderIds registerMedicalCertificateToFKViaIntygstjansten) {
         this.registerMedicalCertificateToFKViaIntygstjansten = registerMedicalCertificateToFKViaIntygstjansten;
     }
 
@@ -43,11 +39,11 @@ public class FkAntalIntyg {
         return antalRegisterMedicalCertificateToFKTot;
     }
 
-    public IntygPerRecieverId getSendMedicalCertificateToIntygstjansten() {
+    public IntygGrupperatPaSenderIds getSendMedicalCertificateToIntygstjansten() {
         return sendMedicalCertificateToIntygstjansten;
     }
 
-    public void setSendMedicalCertificateToIntygstjansten(IntygPerRecieverId sendMedicalCertificateToIntygstjansten) {
+    public void setSendMedicalCertificateToIntygstjansten(IntygGrupperatPaSenderIds sendMedicalCertificateToIntygstjansten) {
         this.sendMedicalCertificateToIntygstjansten = sendMedicalCertificateToIntygstjansten;
     }
 
@@ -58,28 +54,5 @@ public class FkAntalIntyg {
     public void setFelRegisterMedicalCertificate(IntygErrors felRegisterMedicalCertificate) {
         this.felRegisterMedicalCertificate = felRegisterMedicalCertificate;
     }
-//    public Long getAntalFelRegisterMedicalCertificateTotal() {
-//        return antalFelRegisterMedicalCertificateTotal;
-//    }
-//
-//    public void setAntalFelRegisterMedicalCertificateTotal(Long antalFelRegisterMedicalCertificateTotal) {
-//        this.antalFelRegisterMedicalCertificateTotal = antalFelRegisterMedicalCertificateTotal;
-//    }
 
-
-//    public Long getAntalFelRegisterMedicalCertificateOnSundays() {
-//        return antalFelRegisterMedicalCertificateOnSundays;
-//    }
-//
-//    public void setAntalFelRegisterMedicalCertificateOnSundays(Long antalFelRegisterMedicalCertificateOnSundays) {
-//        this.antalFelRegisterMedicalCertificateOnSundays = antalFelRegisterMedicalCertificateOnSundays;
-//    }
-//
-//    public String getAntalFelAvTotal() {
-//        return antalFelAvTotal;
-//    }
-//
-//    public void setAntalFelAvTotal(String antalFelAvTotal) {
-//        this.antalFelAvTotal = antalFelAvTotal;
-//    }
 }

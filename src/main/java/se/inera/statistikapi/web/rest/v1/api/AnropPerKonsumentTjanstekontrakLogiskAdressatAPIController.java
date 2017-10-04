@@ -42,7 +42,6 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
     private final Logger log = LoggerFactory.getLogger(AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController.class);
 
 
-	
 	@Autowired
 	private AnropPerKonsumentTjanstekontrakLogiskAdressatService anropPerKonsumentTjanstekontrakLogiskAdressatService;
 	
@@ -60,7 +59,7 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 	 */
 	@ApiOperation(value = "anropPerKonsumentTjanstekontraktLogiskAdressat i text/csv format",
 			notes = OPERATION_NOTES )
-	@RequestMapping(value={"","txt"}, method = RequestMethod.GET)
+	@RequestMapping(value={"txt"}, method = RequestMethod.GET)
 	public void getAllAsCsv(HttpServletResponse response,
 			@RequestParam(required = false) @ApiParam(value = PARAM_KONTRAKT_DESCRIPTION) String tjanstekontrakt,
 			@RequestParam(required = false) @ApiParam(value = PARAM_TID_DESCRIPTION) String time) throws IOException {
@@ -100,9 +99,9 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 	/**
 	 * GET /connectionPoints -> get all the connectionPoints as json
 	 */
-	@ApiOperation(value = "anropPerKonsumentTjanstekontraktLogiskAdressat i json format",
+	@ApiOperation(value = "anropPerKonsumentTjanstekontraktLogiskAdressat i json/xml format",
 			notes = OPERATION_NOTES, response = AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO.class)
-    @RequestMapping(value={"","json"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value={""}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE} )
 	public List<AnropPerKonsumentTjanstekontrakLogiskAdressatDTO> getAllAsJson(
 			@RequestParam(required = false) @ApiParam(value = PARAM_KONTRAKT_DESCRIPTION) String tjanstekontrakt,
 			@RequestParam(required = false) @ApiParam(value = PARAM_TID_DESCRIPTION) String time) {
@@ -112,24 +111,5 @@ public class AnropPerKonsumentTjanstekontrakLogiskAdressatAPIController {
 
 		return getAll(tjanstekontrakt, time);
 	}
-
-	/**
-	 * GET /connectionPoints -> get all the connectionPoints as xml
-	 */
-	@ApiOperation(value = "anropPerKonsumentTjanstekontraktLogiskAdressat i xml format",
-			notes = OPERATION_NOTES, response = AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO.class)
-	@RequestMapping(value={"","xml"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_XML_VALUE})
-	public AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO getAllAsXml(
-			@RequestParam(required = false) @ApiParam(value = PARAM_KONTRAKT_DESCRIPTION) String tjanstekontrakt,
-			@RequestParam(required = false) @ApiParam(value = PARAM_TID_DESCRIPTION) String time) {
-		log.debug("REST request to get all AnropPerKonsumentTjanstekontrakLogiskAdressatDTO as xml");
-
-        TimeValidator.validateTime(time);
-		
-		return new AnropPerKonsumentTjanstekontrakLogiskAdressatListDTO(getAll(tjanstekontrakt, time));
-	}
-	
-
-
 
 }
